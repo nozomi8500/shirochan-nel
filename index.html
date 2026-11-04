@@ -1,0 +1,1808 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="google-site-verification" content="tkH60kNLPcb1HnbdebzQK2uB07ltGAHYL5MNfWearug">
+
+<title>素人ちゃんねる</title>
+<meta name="description" content="素人ちゃんねる。動画を検索し、タグや出演者から動画を探せる動画まとめサイト。">
+<meta name="robots" content="index,follow,max-image-preview:large">
+<link id="canonicalUrl" rel="canonical" href="https://shirochan-nel.netlify.app/">
+
+<meta property="og:site_name" content="素人ちゃんねる">
+<meta property="og:title" content="素人ちゃんねる">
+<meta property="og:description" content="素人ちゃんねる">
+<meta property="og:type" content="website">
+<meta property="og:url" content="https://shirochan-nel.netlify.app/">
+<meta property="og:image" content="">
+
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="素人ちゃんねる">
+<meta name="twitter:description" content="素人ちゃんねる">
+
+<script id="videoStructuredData" type="application/ld+json">
+{
+  "@context":"https://schema.org",
+  "@type":"WebSite",
+  "name":"素人ちゃんねる",
+  "url":"https://shirochan-nel.netlify.app/"
+}
+</script>
+
+<style>
+:root{
+  --bg:#100b10;
+  --panel:#1b121b;
+  --panel2:#241724;
+  --pink:#ff4fa3;
+  --pink2:#ff85c2;
+  --text:#fff4fb;
+  --muted:#bba7b7;
+  --border:#3b2639;
+  --danger:#ff5c73;
+  --radius:14px
+}
+
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif
+}
+
+button,input,textarea,select{font:inherit}
+
+button{
+  cursor:pointer;
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:10px 13px;
+  color:var(--text);
+  background:var(--panel2)
+}
+
+button:hover{border-color:var(--pink)}
+button:disabled{opacity:.45;cursor:not-allowed}
+
+button.primary{
+  background:var(--pink);
+  border-color:var(--pink);
+  color:#240b1a;
+  font-weight:800
+}
+
+button.danger{
+  color:#fff;
+  background:#4b1727;
+  border-color:#76243c
+}
+
+button.ghost{background:transparent}
+
+input,textarea,select{
+  width:100%;
+  background:#120d13;
+  color:var(--text);
+  border:1px solid var(--border);
+  border-radius:10px;
+  padding:11px 12px;
+  outline:none
+}
+
+input:focus,textarea:focus,select:focus{border-color:var(--pink)}
+textarea{resize:vertical;min-height:90px}
+.hidden{display:none!important}
+
+header{
+  position:sticky;
+  top:0;
+  z-index:20;
+  background:rgba(16,11,16,.96);
+  backdrop-filter:blur(12px);
+  border-bottom:1px solid var(--border)
+}
+
+.header-inner{
+  max-width:1400px;
+  margin:auto;
+  padding:14px 20px;
+  display:flex;
+  align-items:center;
+  gap:18px
+}
+
+.logo{
+  flex-shrink:0;
+  color:var(--pink);
+  font-size:25px;
+  font-weight:900;
+  letter-spacing:-1px;
+  cursor:pointer
+}
+
+.logo span{color:#fff}
+.header-search{flex:1;min-width:0}
+
+main{
+  max-width:1400px;
+  margin:auto;
+  padding:24px 20px 60px
+}
+
+.toolbar{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-bottom:16px
+}
+
+.toolbar-left,.toolbar-right{
+  display:flex;
+  align-items:center;
+  gap:8px;
+  flex-wrap:wrap
+}
+
+.result-count{color:var(--muted);font-size:13px}
+select.sort-select{width:auto;min-width:140px}
+.tag-area{margin:28px 0 24px}
+
+.section-label{
+  font-size:15px;
+  font-weight:800;
+  color:var(--text);
+  margin-bottom:12px
+}
+
+.tag-list{display:flex;flex-wrap:wrap;gap:8px}
+
+.tag-chip,.actress-chip{
+  display:inline-flex;
+  align-items:center;
+  gap:5px;
+  border:1px solid var(--border);
+  border-radius:999px;
+  background:#1b121b;
+  color:#e7cfe0;
+  padding:7px 11px;
+  font-size:13px;
+  max-width:100%;
+  overflow-wrap:anywhere
+}
+
+.tag-chip.active,.actress-chip.active{
+  color:#260b1b;
+  background:var(--pink);
+  border-color:var(--pink);
+  font-weight:800
+}
+
+.tag-chip .count,.actress-chip .count{
+  opacity:.7;
+  font-size:11px
+}
+
+.video-grid{
+  display:grid;
+  grid-template-columns:repeat(3,minmax(0,1fr));
+  gap:22px 16px
+}
+
+.video-card{min-width:0}
+
+.thumb-wrap{
+  position:relative;
+  overflow:hidden;
+  border-radius:var(--radius);
+  background:#281b28;
+  border:1px solid #342334;
+  aspect-ratio:16/9
+}
+
+.thumbnail{
+  display:block;
+  width:100%;
+  height:100%;
+  object-fit:cover;
+  cursor:pointer;
+  transition:transform .25s ease
+}
+
+.video-card:hover .thumbnail{transform:scale(1.035)}
+
+.thumb-placeholder{
+  width:100%;
+  height:100%;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  color:var(--pink);
+  font-size:32px;
+  cursor:pointer;
+  background:linear-gradient(135deg,#271526,#130e15)
+}
+
+.video-info{padding:10px 2px 0}
+
+.video-title{
+  margin:0 0 8px;
+  font-size:15px;
+  line-height:1.55;
+  font-weight:750;
+  overflow-wrap:anywhere;
+  cursor:pointer
+}
+
+.video-title:hover{color:var(--pink2)}
+
+.video-meta{
+  display:flex;
+  align-items:center;
+  gap:9px;
+  flex-wrap:wrap;
+  color:var(--muted);
+  font-size:11px;
+  margin-bottom:9px
+}
+
+.empty-state{
+  padding:60px 20px;
+  text-align:center;
+  border:1px dashed var(--border);
+  border-radius:16px;
+  color:var(--muted)
+}
+
+.empty-state strong{
+  display:block;
+  color:var(--text);
+  font-size:18px;
+  margin-bottom:8px
+}
+
+footer{
+  padding:25px 20px;
+  text-align:center;
+  color:var(--muted);
+  border-top:1px solid var(--border);
+  font-size:12px
+}
+
+.site-footer{
+  position:relative;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:12px
+}
+
+.admin-link{
+  position:absolute;
+  right:20px;
+  bottom:8px;
+  color:var(--muted);
+  font-size:10px;
+  text-decoration:none;
+  opacity:.55;
+  transition:color .2s,opacity .2s
+}
+
+.admin-link:hover{color:var(--pink);opacity:1}
+
+.admin-link:focus-visible{
+  outline:1px solid var(--pink);
+  outline-offset:4px;
+  border-radius:3px
+}
+
+.modal{
+  position:fixed;
+  inset:0;
+  z-index:100;
+  background:rgba(0,0,0,.83);
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  padding:18px;
+  overflow-y:auto
+}
+
+.modal-panel{
+  width:min(850px,100%);
+  max-height:94vh;
+  overflow:auto;
+  background:#1a111a;
+  border:1px solid var(--border);
+  border-radius:17px;
+  padding:20px
+}
+
+.modal-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+  margin-bottom:18px
+}
+
+.modal-head h2{margin:0;font-size:21px}
+.close-button{font-size:22px;padding:4px 11px}
+
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:14px
+}
+
+.form-field{min-width:0}
+.form-field.full{grid-column:1/-1}
+
+.form-field label{
+  display:block;
+  font-size:13px;
+  color:#e4cddd;
+  margin-bottom:7px
+}
+
+.help-text,.small-note{
+  font-size:12px;
+  color:var(--muted);
+  line-height:1.6;
+  margin-top:6px
+}
+
+.form-actions,.settings-actions,.detail-secondary-actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:8px;
+  margin-top:18px
+}
+
+.player-modal .modal-panel{width:min(1050px,100%)}
+
+.player-frame{
+  width:100%;
+  aspect-ratio:16/9;
+  background:#000;
+  border-radius:10px;
+  overflow:hidden
+}
+
+.player-frame iframe,.player-frame video{
+  width:100%;
+  height:100%;
+  border:0;
+  display:block
+}
+
+.player-details{padding-top:15px}
+.player-details h2{margin:0 0 8px;overflow-wrap:anywhere}
+
+.player-description{
+  white-space:pre-wrap;
+  color:#d3bfd0;
+  line-height:1.7;
+  overflow-wrap:anywhere
+}
+
+.settings-section{
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:15px;
+  margin-bottom:15px
+}
+
+.settings-section h3{margin:0 0 12px;font-size:16px}
+.tag-manage-list{display:flex;flex-wrap:wrap;gap:8px}
+
+.toast{
+  position:fixed;
+  z-index:200;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  background:#f8d9eb;
+  color:#260b1b;
+  font-weight:750;
+  padding:12px 18px;
+  border-radius:999px;
+  box-shadow:0 5px 25px #0008;
+  max-width:90vw;
+  text-align:center
+}
+
+.detail-modal .modal-panel{width:min(850px,100%)}
+
+.detail-thumbnail{
+  display:block;
+  width:100%;
+  aspect-ratio:16/9;
+  object-fit:cover;
+  border-radius:12px;
+  background:#281b28
+}
+
+.detail-no-thumbnail{
+  width:100%;
+  aspect-ratio:16/9;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  border-radius:12px;
+  background:linear-gradient(135deg,#271526,#130e15);
+  color:var(--pink);
+  font-size:42px
+}
+
+.detail-title{
+  margin:16px 0 12px;
+  font-size:21px;
+  line-height:1.6;
+  overflow-wrap:anywhere
+}
+
+.detail-meta{color:var(--muted);font-size:12px;margin:12px 0}
+.detail-tags{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0}
+
+.detail-description{
+  color:#e4cddd;
+  white-space:pre-wrap;
+  line-height:1.8;
+  overflow-wrap:anywhere;
+  margin:16px 0
+}
+
+.detail-open-button{
+  width:100%;
+  padding:15px;
+  font-size:16px;
+  margin-top:8px
+}
+
+/* 個別動画ページ */
+.video-page-back{
+  display:inline-block;
+  margin-bottom:16px;
+  color:var(--pink2);
+  text-decoration:none;
+  font-size:14px
+}
+
+.video-page-back:hover{text-decoration:underline}
+
+.video-page-content{
+  max-width:900px;
+  margin:0 auto
+}
+
+.video-page-content .detail-thumbnail,
+.video-page-content .detail-no-thumbnail{
+  width:100%
+}
+
+.video-page-content .detail-title{
+  font-size:24px
+}
+
+.video-page-content .detail-open-button{
+  display:block;
+  text-align:center;
+  text-decoration:none;
+  border:1px solid var(--pink);
+  border-radius:10px;
+  background:var(--pink);
+  color:#240b1a;
+  font-weight:800
+}
+
+.video-page-content .detail-open-button:hover{
+  opacity:.9
+}
+
+/* ClickAdilla 広告枠 */
+.ad-slot{
+  position:relative;
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  width:100%;
+  max-width:100%;
+  min-width:0;
+  margin:24px auto;
+  padding:0;
+  text-align:center;
+  overflow:visible;
+  clear:both
+}
+
+.ad-slot > div[data-banner-id]{
+  display:block;
+  width:max-content;
+  max-width:100%;
+  margin:0 auto !important;
+  padding:0;
+  text-align:center
+}
+
+.ad-slot iframe,
+.ad-slot img{
+  display:block;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  max-width:100%
+}
+
+.ad-slot-top{
+  margin:8px auto 24px
+}
+
+.ad-slot-middle{
+  width:100%;
+  margin:24px auto
+}
+
+.ad-slot-bottom{
+  display:flex;
+  justify-content:center;
+  align-items:center;
+  width:100%;
+  max-width:100%;
+  margin:28px auto 30px;
+  padding:0;
+  text-align:center;
+  overflow:visible
+}
+
+.ad-slot-bottom > div[data-banner-id="1505989"]{
+  display:flex !important;
+  justify-content:center !important;
+  align-items:center !important;
+  width:100% !important;
+  max-width:100% !important;
+  margin-left:auto !important;
+  margin-right:auto !important;
+  text-align:center !important
+}
+
+.ad-slot-bottom > div[data-banner-id="1505989"] > *,
+.ad-slot-bottom > div[data-banner-id="1505989"] iframe,
+.ad-slot-bottom > div[data-banner-id="1505989"] img{
+  display:block !important;
+  margin-left:auto !important;
+  margin-right:auto !important
+}
+
+@media(min-width:1100px){
+  .video-grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+}
+
+@media(max-width:760px){
+  .header-inner{
+    padding:11px 12px;
+    gap:10px;
+    flex-wrap:wrap
+  }
+
+  .logo{font-size:23px}
+  .header-search{order:3;flex-basis:100%}
+  main{padding:16px 12px 40px}
+
+  .video-grid{
+    grid-template-columns:repeat(2,minmax(0,1fr));
+    gap:19px 10px
+  }
+
+  .video-title{font-size:13px}
+  .form-grid{grid-template-columns:1fr}
+  .form-field.full{grid-column:auto}
+  .modal{padding:8px}
+  .modal-panel{padding:15px}
+  .toolbar{align-items:flex-start}
+  .toolbar-left,.toolbar-right{width:100%}
+  select.sort-select{flex:1}
+  .detail-title{font-size:18px}
+  .admin-link{right:12px;bottom:7px;font-size:10px}
+
+  .ad-slot{
+    width:100%;
+    max-width:100%;
+    margin:18px auto;
+    padding:0;
+    justify-content:center;
+    overflow:visible
+  }
+
+  .ad-slot > div[data-banner-id]{
+    max-width:100%;
+    margin-left:auto !important;
+    margin-right:auto !important
+  }
+
+  .ad-slot iframe,
+  .ad-slot img{
+    max-width:100%;
+    margin-left:auto !important;
+    margin-right:auto !important
+  }
+
+  .ad-slot-middle{margin:22px auto}
+
+  .ad-slot-bottom{
+    width:100%;
+    max-width:100%;
+    margin:24px auto 28px;
+    display:flex;
+    justify-content:center;
+    align-items:center;
+    text-align:center
+  }
+
+  .ad-slot-bottom > div[data-banner-id="1505989"]{
+    width:100% !important;
+    max-width:100% !important;
+    display:flex !important;
+    justify-content:center !important;
+    align-items:center !important;
+    margin-left:auto !important;
+    margin-right:auto !important;
+    text-align:center !important
+  }
+
+  .ad-slot-bottom > div[data-banner-id="1505989"] > *,
+  .ad-slot-bottom > div[data-banner-id="1505989"] iframe,
+  .ad-slot-bottom > div[data-banner-id="1505989"] img{
+    margin-left:auto !important;
+    margin-right:auto !important
+  }
+
+  .video-page-content .detail-title{font-size:20px}
+}
+
+@media(max-width:380px){
+  .video-grid{gap:16px 8px}
+  .video-title{font-size:12px}
+  .video-meta{font-size:10px;gap:6px}
+}
+</style>
+</head>
+
+<body>
+
+<div class="app">
+
+<header>
+  <div class="header-inner">
+    <div class="logo" id="homeLogo">素人<span>ちゃんねる</span></div>
+    <div class="header-search" id="headerSearchArea">
+      <input id="searchInput" type="search" placeholder="動画タイトル・タグ・出演女優・説明で検索">
+    </div>
+  </div>
+</header>
+
+<main>
+
+  <!-- 広告1：ページ上部 -->
+  <div class="ad-slot ad-slot-top" aria-label="広告">
+    <div data-banner-id="1505987"></div>
+  </div>
+
+  <!-- 一覧ページ -->
+  <div id="listingPage">
+
+    <div class="toolbar">
+      <div class="toolbar-left">
+        <span id="resultCount" class="result-count">読み込み中...</span>
+        <button id="clearFiltersButton" class="ghost">絞り込み解除</button>
+      </div>
+
+      <div class="toolbar-right">
+        <select id="sortSelect" class="sort-select" aria-label="並び順">
+          <option value="newest">新着順</option>
+          <option value="oldest">古い順</option>
+          <option value="title">タイトル順</option>
+          <option value="popular">人気順</option>
+        </select>
+      </div>
+    </div>
+
+    <section id="videoGridTop" class="video-grid"></section>
+
+    <!-- 広告2：4本目の動画の後 -->
+    <div id="middleAdSlot" class="ad-slot ad-slot-middle" aria-label="広告">
+      <div data-banner-id="1505988"></div>
+    </div>
+
+    <section id="videoGridBottom" class="video-grid"></section>
+
+    <section id="emptyState" class="empty-state hidden">
+      <strong>動画が見つかりません</strong>
+      <span>検索条件を変えてください。</span>
+    </section>
+
+    <!-- 広告3：動画一覧の下 -->
+    <div class="ad-slot ad-slot-bottom" aria-label="広告">
+      <div data-banner-id="1505989"></div>
+    </div>
+
+    <section class="tag-area">
+      <div class="section-label">タグで探す</div>
+      <div class="filter-search">
+        <input id="tagSearchInput" type="search" placeholder="タグ名を検索">
+      </div>
+      <div id="tagList" class="tag-list"></div>
+    </section>
+
+    <section class="tag-area">
+      <div class="section-label">出演女優で探す</div>
+      <div class="filter-search">
+        <input id="actressSearchInput" type="search" placeholder="出演女優名を検索">
+      </div>
+      <div id="actressList" class="tag-list"></div>
+    </section>
+
+  </div>
+
+  <!-- 個別動画ページ -->
+  <section id="videoPage" class="hidden">
+    <div class="video-page-content">
+      <a href="/" id="videoPageBack" class="video-page-back">← 動画一覧に戻る</a>
+
+      <div id="videoPageThumbnail"></div>
+
+      <h1 id="videoPageTitle" class="detail-title"></h1>
+
+      <div id="videoPageMeta" class="detail-meta"></div>
+
+      <div class="section-label">タグ</div>
+      <div id="videoPageTags" class="detail-tags"></div>
+
+      <div class="section-label">出演女優</div>
+      <div id="videoPageActresses" class="detail-tags"></div>
+
+      <div class="section-label">動画説明</div>
+      <p id="videoPageDescription" class="detail-description"></p>
+
+      <a id="videoPageOpenButton"
+         class="detail-open-button"
+         href="#"
+         target="_blank"
+         rel="noopener noreferrer">
+        動画サイトで開く ↗
+      </a>
+    </div>
+  </section>
+
+</main>
+
+<footer class="site-footer">
+  <span>素人ちゃんねる</span>
+  <a href="./admin.html" class="admin-link" aria-label="管理者ログイン">管理者</a>
+</footer>
+
+</div>
+
+<div id="detailModal" class="modal detail-modal hidden">
+  <div class="modal-panel">
+    <div class="modal-head">
+      <h2>動画詳細</h2>
+      <button class="close-button" data-close="detailModal">×</button>
+    </div>
+
+    <div id="detailThumbnailArea"></div>
+    <h2 id="detailTitle" class="detail-title"></h2>
+    <div id="detailMeta" class="detail-meta"></div>
+
+    <div class="section-label">タグ</div>
+    <div id="detailTags" class="detail-tags"></div>
+
+    <div class="section-label">出演女優</div>
+    <div id="detailActresses" class="detail-tags"></div>
+
+    <p id="detailDescription" class="detail-description"></p>
+
+    <button id="detailOpenButton" class="primary detail-open-button">
+      動画サイトで開く ↗
+    </button>
+
+    <div class="detail-secondary-actions">
+      <button id="detailPageButton">個別ページを開く</button>
+      <button id="detailBackButton">一覧に戻る</button>
+    </div>
+  </div>
+</div>
+
+<div id="toast" class="toast hidden"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+(function(){
+"use strict";
+
+const SUPABASE_URL = "https://wbcjcpnwgthsnwmwimcq.supabase.co";
+const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_wI35EBfLjmNSWSfoSdOTOg_yakM_OdI";
+const STORAGE_BUCKET = "thumbnails";
+const SITE_URL = "https://shirochan-nel.netlify.app/";
+
+const $ = id => document.getElementById(id);
+const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
+
+let videos = [];
+let activeTag = "";
+let activeActress = "";
+let currentVideoId = null;
+let toastTimer = null;
+let currentPageMode = "listing";
+let countedVideoIds = new Set();
+
+const pendingViewUpdates = new Map();
+
+function escapeHTML(v) {
+  return String(v ?? "").replace(/[&<>"']/g, c => ({
+    "&":"&amp;",
+    "<":"&lt;",
+    ">":"&gt;",
+    '"':"&quot;",
+    "'":"&#39;"
+  }[c]));
+}
+
+function parseTags(v) {
+  if (Array.isArray(v)) {
+    return [...new Set(v.map(x => String(x).trim()).filter(Boolean))];
+  }
+
+  return [...new Set(
+    String(v || "")
+      .split(/[,\u3001\n\r]+/)
+      .map(x => x.trim())
+      .filter(Boolean)
+  )];
+}
+
+function toMillis(v) {
+  if (v === undefined || v === null || v === "") return Date.now();
+
+  const n = Number(v);
+  if (Number.isFinite(n) && n > 0) return n;
+
+  const d = Date.parse(v);
+  return Number.isFinite(d) ? d : Date.now();
+}
+
+function normaliseVideo(v) {
+  const s = v || {};
+
+  return {
+    id: String(s.id ?? ""),
+    title: String(s.title || s.name || "無題の動画"),
+    url: String(s.url || s.videoUrl || ""),
+    thumbnail: String(s.thumbnail || s.thumbnailUrl || s.image || ""),
+    tags: parseTags(s.tags || s.tag || ""),
+    actresses: parseTags(s.actresses || s.actress || s.performers || s.cast || ""),
+    description: String(s.description || s.desc || ""),
+    views: Number(s.views ?? 0),
+    createdAt: toMillis(s.created_at || s.createdAt || s.created || s.timestamp),
+    updatedAt: toMillis(s.updated_at || s.updatedAt)
+  };
+}
+
+function notify(message) {
+  const el = $("toast");
+  el.textContent = message;
+  el.classList.remove("hidden");
+
+  clearTimeout(toastTimer);
+
+  toastTimer = setTimeout(() => {
+    el.classList.add("hidden");
+  }, 3000);
+}
+
+function resolveThumbnail(value) {
+  const raw = String(value || "").trim();
+
+  if (!raw) return "";
+
+  if (
+    /^https?:\/\//i.test(raw) ||
+    /^data:image\//i.test(raw) ||
+    /^blob:/i.test(raw)
+  ) {
+    return raw;
+  }
+
+  let path = raw.replace(/^\/+/, "");
+
+  if (path.startsWith(STORAGE_BUCKET + "/")) {
+    path = path.slice(STORAGE_BUCKET.length + 1);
+  }
+
+  if (!path) return "";
+
+  try {
+    return client.storage
+      .from(STORAGE_BUCKET)
+      .getPublicUrl(path)?.data?.publicUrl || "";
+  } catch(error) {
+    console.error("サムネイルURLの生成に失敗しました:", error);
+    return "";
+  }
+}
+
+function getVideoPageUrl(id) {
+  const url = new URL(SITE_URL);
+  url.searchParams.set("video", String(id));
+  return url.href;
+}
+
+function updateMetaForHome() {
+  document.title = "素人ちゃんねる";
+
+  const description =
+    "素人ちゃんねる。動画を検索し、タグや出演者から動画を探せる動画まとめサイト。";
+
+  document.querySelector('meta[name="description"]').content = description;
+
+  $("canonicalUrl").href = SITE_URL;
+
+  document.querySelector('meta[property="og:title"]').content =
+    "素人ちゃんねる";
+
+  document.querySelector('meta[property="og:description"]').content =
+    description;
+
+  document.querySelector('meta[property="og:type"]').content =
+    "website";
+
+  document.querySelector('meta[property="og:url"]').content =
+    SITE_URL;
+
+  document.querySelector('meta[property="og:image"]').content = "";
+
+  document.querySelector('meta[name="twitter:title"]').content =
+    "素人ちゃんねる";
+
+  document.querySelector('meta[name="twitter:description"]').content =
+    description;
+
+  $("videoStructuredData").textContent = JSON.stringify({
+    "@context":"https://schema.org",
+    "@type":"WebSite",
+    "name":"素人ちゃんねる",
+    "url":SITE_URL
+  });
+}
+
+function updateMetaForVideo(video) {
+  const title = video.title + " | 素人ちゃんねる";
+
+  const description = (
+    video.description ||
+    video.title + "。素人ちゃんねるで動画の詳細を確認できます。"
+  ).slice(0, 300);
+
+  const pageUrl = getVideoPageUrl(video.id);
+  const thumbnail = getThumbnail(video);
+
+  document.title = title;
+
+  document.querySelector('meta[name="description"]').content =
+    description;
+
+  $("canonicalUrl").href = pageUrl;
+
+  document.querySelector('meta[property="og:title"]').content =
+    title;
+
+  document.querySelector('meta[property="og:description"]').content =
+    description;
+
+  document.querySelector('meta[property="og:type"]').content =
+    "article";
+
+  document.querySelector('meta[property="og:url"]').content =
+    pageUrl;
+
+  document.querySelector('meta[property="og:image"]').content =
+    thumbnail;
+
+  document.querySelector('meta[name="twitter:title"]').content =
+    title;
+
+  document.querySelector('meta[name="twitter:description"]').content =
+    description;
+
+  $("videoStructuredData").textContent = JSON.stringify({
+    "@context":"https://schema.org",
+    "@type":"VideoObject",
+    "name":video.title,
+    "description":description,
+    "thumbnailUrl":thumbnail ? [thumbnail] : undefined,
+    "uploadDate":new Date(video.createdAt).toISOString(),
+    "url":pageUrl,
+    "embedUrl":isSafeHttpUrl(video.url) ? video.url : undefined,
+    "interactionStatistic":{
+      "@type":"InteractionCounter",
+      "interactionType":{"@type":"WatchAction"},
+      "userInteractionCount":Math.max(0, Number(video.views) || 0)
+    },
+    "publisher":{
+      "@type":"Organization",
+      "name":"素人ちゃんねる",
+      "url":SITE_URL
+    }
+  });
+}
+
+function isSafeHttpUrl(value) {
+  try {
+    const url = new URL(value);
+    return ["http:","https:"].includes(url.protocol);
+  } catch(e) {
+    return false;
+  }
+}
+
+async function loadVideos() {
+  const { data, error } = await client
+    .from("videos")
+    .select("id,created_at,title,url,thumbnail,actress,tags,description,sort_order,views")
+    .order("sort_order", { ascending: false });
+
+  if (error) {
+    console.error(error);
+    notify("動画データの読み込みに失敗しました");
+    return;
+  }
+
+  videos = (data || []).map(normaliseVideo);
+
+  render();
+
+  const params = new URLSearchParams(window.location.search);
+  const requestedVideoId = params.get("video");
+
+  if (requestedVideoId) {
+    const video = videos.find(v => String(v.id) === requestedVideoId);
+
+    if (video) {
+      showVideoPage(video, false, true);
+    } else {
+      showListingPage(false);
+      notify("指定された動画が見つかりませんでした");
+    }
+  } else {
+    showListingPage(false);
+  }
+}
+
+function getAllTags() {
+  const m = new Map();
+
+  videos.forEach(v => {
+    v.tags.forEach(t => {
+      m.set(t, (m.get(t) || 0) + 1);
+    });
+  });
+
+  return [...m.entries()].sort((a,b) => a[0].localeCompare(b[0], "ja"));
+}
+
+function getAllActresses() {
+  const m = new Map();
+
+  videos.forEach(v => {
+    v.actresses.forEach(t => {
+      m.set(t, (m.get(t) || 0) + 1);
+    });
+  });
+
+  return [...m.entries()].sort((a,b) => a[0].localeCompare(b[0], "ja"));
+}
+
+function renderTags() {
+  const tags = getAllTags();
+  const list = $("tagList");
+  const q = $("tagSearchInput").value.trim().toLocaleLowerCase();
+
+  list.innerHTML = "";
+
+  const all = document.createElement("button");
+  all.className = "tag-chip" + (!activeTag ? " active" : "");
+  all.textContent = "すべて";
+
+  all.onclick = () => {
+    activeTag = "";
+    render();
+  };
+
+  list.appendChild(all);
+
+  const visible = tags.filter(([t]) =>
+    t.toLocaleLowerCase().includes(q)
+  );
+
+  visible.forEach(([tag,count]) => {
+    const b = document.createElement("button");
+
+    b.className = "tag-chip" + (activeTag === tag ? " active" : "");
+    b.innerHTML = `${escapeHTML(tag)} <span class="count">${count}</span>`;
+
+    b.onclick = () => {
+      activeTag = activeTag === tag ? "" : tag;
+      render();
+    };
+
+    list.appendChild(b);
+  });
+
+  if (!visible.length) {
+    const e = document.createElement("span");
+    e.textContent = tags.length
+      ? "一致するタグがありません。"
+      : "まだタグはありません。";
+
+    list.appendChild(e);
+  }
+}
+
+function renderActresses() {
+  const names = getAllActresses();
+  const list = $("actressList");
+  const q = $("actressSearchInput").value.trim().toLocaleLowerCase();
+
+  list.innerHTML = "";
+
+  const all = document.createElement("button");
+  all.className = "actress-chip" + (!activeActress ? " active" : "");
+  all.textContent = "すべて";
+
+  all.onclick = () => {
+    activeActress = "";
+    render();
+  };
+
+  list.appendChild(all);
+
+  const visible = names.filter(([n]) =>
+    n.toLocaleLowerCase().includes(q)
+  );
+
+  visible.forEach(([name,count]) => {
+    const b = document.createElement("button");
+
+    b.className = "actress-chip" + (activeActress === name ? " active" : "");
+    b.innerHTML = `${escapeHTML(name)} <span class="count">${count}</span>`;
+
+    b.onclick = () => {
+      activeActress = activeActress === name ? "" : name;
+      render();
+    };
+
+    list.appendChild(b);
+  });
+
+  if (!visible.length) {
+    const e = document.createElement("span");
+
+    e.textContent = names.length
+      ? "一致する出演女優がいません。"
+      : "まだ出演女優は登録されていません。";
+
+    list.appendChild(e);
+  }
+}
+
+function getFilteredVideos() {
+  const q = $("searchInput").value.trim().toLocaleLowerCase();
+
+  let list = videos.filter(v => {
+    if (activeTag && !v.tags.includes(activeTag)) return false;
+    if (activeActress && !v.actresses.includes(activeActress)) return false;
+
+    if (
+      q &&
+      ![
+        v.title,
+        v.description,
+        v.url,
+        ...v.tags,
+        ...v.actresses
+      ].join(" ").toLocaleLowerCase().includes(q)
+    ) {
+      return false;
+    }
+
+    return true;
+  });
+
+  const sort = $("sortSelect").value;
+
+  if (sort === "newest") {
+    list.sort((a,b) => b.createdAt - a.createdAt);
+  }
+
+  if (sort === "oldest") {
+    list.sort((a,b) => a.createdAt - b.createdAt);
+  }
+
+  if (sort === "title") {
+    list.sort((a,b) => a.title.localeCompare(b.title, "ja"));
+  }
+
+  if (sort === "popular") {
+    list.sort((a,b) =>
+      (b.views || 0) - (a.views || 0) ||
+      b.createdAt - a.createdAt
+    );
+  }
+
+  return list;
+}
+
+function getYouTubeId(url) {
+  try {
+    const p = new URL(url);
+    const h = p.hostname.replace(/^www\./, "");
+
+    if (h === "youtu.be") {
+      return p.pathname.split("/").filter(Boolean)[0] || "";
+    }
+
+    if (
+      h.endsWith("youtube.com") ||
+      h.endsWith("youtube-nocookie.com")
+    ) {
+      if (p.searchParams.get("v")) {
+        return p.searchParams.get("v");
+      }
+
+      const a = p.pathname.split("/").filter(Boolean);
+
+      if (["embed","shorts","live","v"].includes(a[0])) {
+        return a[1] || "";
+      }
+    }
+  } catch(e) {}
+
+  return "";
+}
+
+function getThumbnail(v) {
+  const stored = resolveThumbnail(v.thumbnail);
+
+  if (stored) return stored;
+
+  const id = getYouTubeId(v.url);
+
+  return id
+    ? `https://img.youtube.com/vi/${encodeURIComponent(id)}/hqdefault.jpg`
+    : "";
+}
+
+function createVideoCard(v) {
+  const card = document.createElement("article");
+  card.className = "video-card";
+
+  const pageUrl = getVideoPageUrl(v.id);
+
+  const wrap = document.createElement("div");
+  wrap.className = "thumb-wrap";
+
+  const link = document.createElement("a");
+  link.href = pageUrl;
+  link.setAttribute("aria-label", v.title);
+  link.style.display = "block";
+  link.style.width = "100%";
+  link.style.height = "100%";
+
+  const src = getThumbnail(v);
+
+  if (src) {
+    const img = document.createElement("img");
+
+    img.className = "thumbnail";
+    img.src = src;
+    img.alt = v.title;
+    img.loading = "lazy";
+
+    img.onerror = () => {
+      img.remove();
+
+      const ph = document.createElement("div");
+      ph.className = "thumb-placeholder";
+      ph.textContent = "▶";
+
+      link.appendChild(ph);
+    };
+
+    link.appendChild(img);
+
+  } else {
+    const ph = document.createElement("div");
+
+    ph.className = "thumb-placeholder";
+    ph.textContent = "▶";
+
+    link.appendChild(ph);
+  }
+
+  link.addEventListener("click", e => {
+    if (
+      e.ctrlKey ||
+      e.metaKey ||
+      e.shiftKey ||
+      e.altKey ||
+      e.button !== 0
+    ) return;
+
+    e.preventDefault();
+    showVideoPage(v, true, false);
+  });
+
+  wrap.appendChild(link);
+
+  const info = document.createElement("div");
+  info.className = "video-info";
+
+  const title = document.createElement("h3");
+  title.className = "video-title";
+
+  const titleLink = document.createElement("a");
+  titleLink.href = pageUrl;
+  titleLink.textContent = v.title;
+  titleLink.style.color = "inherit";
+  titleLink.style.textDecoration = "none";
+
+  titleLink.addEventListener("click", e => {
+    if (
+      e.ctrlKey ||
+      e.metaKey ||
+      e.shiftKey ||
+      e.altKey ||
+      e.button !== 0
+    ) return;
+
+    e.preventDefault();
+    showVideoPage(v, true, false);
+  });
+
+  title.appendChild(titleLink);
+
+  const meta = document.createElement("div");
+  meta.className = "video-meta";
+
+  const date = document.createElement("span");
+  date.textContent = new Date(v.createdAt).toLocaleDateString("ja-JP");
+
+  const views = document.createElement("span");
+  views.textContent = `閲覧 ${v.views || 0}回`;
+  views.dataset.viewsFor = String(v.id);
+
+  meta.append(date, views);
+  info.append(title, meta);
+
+  card.append(wrap, info);
+
+  return card;
+}
+
+function render() {
+  renderTags();
+  renderActresses();
+
+  const list = getFilteredVideos();
+
+  const gridTop = $("videoGridTop");
+  const gridBottom = $("videoGridBottom");
+
+  gridTop.innerHTML = "";
+  gridBottom.innerHTML = "";
+
+  $("resultCount").textContent =
+    `${list.length}本の動画` +
+    `${activeTag ? " ・タグ：" + activeTag : ""}` +
+    `${activeActress ? " ・出演女優：" + activeActress : ""}`;
+
+  $("emptyState").classList.toggle("hidden", list.length !== 0);
+
+  list.slice(0,4).forEach(v => {
+    gridTop.appendChild(createVideoCard(v));
+  });
+
+  list.slice(4).forEach(v => {
+    gridBottom.appendChild(createVideoCard(v));
+  });
+}
+
+function createFilterButton(text, cls, fn) {
+  const b = document.createElement("button");
+
+  b.className = cls;
+  b.textContent = text;
+  b.onclick = fn;
+
+  return b;
+}
+
+function updateViewDisplays(video) {
+  document.querySelectorAll("[data-views-for]").forEach(el => {
+    if (el.dataset.viewsFor === String(video.id)) {
+      el.textContent = `閲覧 ${video.views || 0}回`;
+    }
+  });
+
+  if (
+    currentVideoId !== null &&
+    String(currentVideoId) === String(video.id)
+  ) {
+    $("videoPageMeta").textContent =
+      new Date(video.createdAt).toLocaleDateString("ja-JP") +
+      " ・ 累計閲覧 " + (video.views || 0) + "回";
+
+    $("detailMeta").textContent =
+      new Date(video.createdAt).toLocaleDateString("ja-JP") +
+      " ・ 累計閲覧 " + (video.views || 0) + "回";
+  }
+}
+
+async function incrementVideoViews(video) {
+  const id = String(video.id);
+
+  if (pendingViewUpdates.has(id)) {
+    return pendingViewUpdates.get(id);
+  }
+
+  const request = (async () => {
+    const { data, error } = await client.rpc("increment_video_views", {
+      video_id: Number(id)
+    });
+
+    if (error) {
+      console.error("閲覧数の加算に失敗しました:", error);
+      return;
+    }
+
+    let updatedViews;
+
+    if (typeof data === "number" || typeof data === "string") {
+      updatedViews = Number(data);
+
+    } else if (Array.isArray(data) && data.length) {
+      updatedViews = Number(data[0]?.views ?? data[0]);
+
+    } else if (data && typeof data === "object") {
+      updatedViews = Number(data.views ?? data.increment_video_views);
+    }
+
+    if (!Number.isFinite(updatedViews)) {
+      console.error("RPCの戻り値から閲覧数を取得できません:", data);
+      return;
+    }
+
+    video.views = updatedViews;
+    updateViewDisplays(video);
+
+    if ($("sortSelect").value === "popular") {
+      render();
+    }
+
+    return updatedViews;
+  })();
+
+  pendingViewUpdates.set(id, request);
+
+  try {
+    return await request;
+  } finally {
+    pendingViewUpdates.delete(id);
+  }
+}
+
+function addVideoTags(container, items, className) {
+  container.innerHTML = "";
+
+  if (!items.length) {
+    container.textContent = "登録されていません。";
+    return;
+  }
+
+  items.forEach(item => {
+    const button = createFilterButton(item, className, () => {
+      if (className === "tag-chip") {
+        activeTag = item;
+      } else {
+        activeActress = item;
+      }
+
+      showListingPage(true);
+      render();
+
+      window.scrollTo({top:0,behavior:"smooth"});
+    });
+
+    container.appendChild(button);
+  });
+}
+
+function showVideoPage(video, pushHistory, countView) {
+  if (!video) return;
+
+  currentVideoId = video.id;
+  currentPageMode = "video";
+
+  if (pushHistory) {
+    history.pushState(
+      {page:"video",videoId:String(video.id)},
+      "",
+      getVideoPageUrl(video.id)
+    );
+  }
+
+  hideModal("detailModal");
+
+  $("listingPage").classList.add("hidden");
+  $("videoPage").classList.remove("hidden");
+  $("headerSearchArea").classList.add("hidden");
+
+  $("videoPageTitle").textContent = video.title;
+
+  $("videoPageMeta").textContent =
+    new Date(video.createdAt).toLocaleDateString("ja-JP") +
+    " ・ 累計閲覧 " + (video.views || 0) + "回";
+
+  $("videoPageDescription").textContent =
+    video.description || "説明はありません。";
+
+  const thumbnailArea = $("videoPageThumbnail");
+  thumbnailArea.innerHTML = "";
+
+  const thumbnail = getThumbnail(video);
+
+  if (thumbnail) {
+    const img = document.createElement("img");
+
+    img.className = "detail-thumbnail";
+    img.src = thumbnail;
+    img.alt = video.title;
+    img.loading = "eager";
+
+    img.onerror = () => {
+      img.remove();
+
+      const placeholder = document.createElement("div");
+      placeholder.className = "detail-no-thumbnail";
+      placeholder.textContent = "▶";
+
+      thumbnailArea.appendChild(placeholder);
+    };
+
+    thumbnailArea.appendChild(img);
+
+  } else {
+    const placeholder = document.createElement("div");
+    placeholder.className = "detail-no-thumbnail";
+    placeholder.textContent = "▶";
+
+    thumbnailArea.appendChild(placeholder);
+  }
+
+  addVideoTags($("videoPageTags"), video.tags, "tag-chip");
+  addVideoTags($("videoPageActresses"), video.actresses, "actress-chip");
+
+  const openButton = $("videoPageOpenButton");
+
+  if (isSafeHttpUrl(video.url)) {
+    openButton.href = video.url;
+    openButton.classList.remove("hidden");
+  } else {
+    openButton.href = "#";
+    openButton.classList.add("hidden");
+  }
+
+  updateMetaForVideo(video);
+
+  if (countView && !countedVideoIds.has(String(video.id))) {
+    countedVideoIds.add(String(video.id));
+    incrementVideoViews(video);
+  }
+
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
+function showListingPage(pushHistory) {
+  currentPageMode = "listing";
+  currentVideoId = null;
+
+  if (pushHistory) {
+    history.pushState(
+      {page:"listing"},
+      "",
+      SITE_URL
+    );
+  }
+
+  $("listingPage").classList.remove("hidden");
+  $("videoPage").classList.add("hidden");
+  $("headerSearchArea").classList.remove("hidden");
+
+  hideModal("detailModal");
+
+  updateMetaForHome();
+
+  window.scrollTo({top:0,behavior:"instant"});
+}
+
+function openDetail(id) {
+  const v = videos.find(x => String(x.id) === String(id));
+
+  if (!v) return;
+
+  currentVideoId = v.id;
+
+  $("detailTitle").textContent = v.title;
+
+  $("detailMeta").textContent =
+    new Date(v.createdAt).toLocaleDateString("ja-JP") +
+    " ・ 累計閲覧 " + (v.views || 0) + "回";
+
+  $("detailDescription").textContent =
+    v.description || "説明はありません。";
+
+  const area = $("detailThumbnailArea");
+  area.innerHTML = "";
+
+  const src = getThumbnail(v);
+
+  if (src) {
+    const img = document.createElement("img");
+
+    img.className = "detail-thumbnail";
+    img.src = src;
+    img.alt = v.title;
+
+    img.onerror = () => {
+      img.remove();
+
+      const ph = document.createElement("div");
+      ph.className = "detail-no-thumbnail";
+      ph.textContent = "▶";
+
+      area.appendChild(ph);
+    };
+
+    area.appendChild(img);
+
+  } else {
+    const ph = document.createElement("div");
+
+    ph.className = "detail-no-thumbnail";
+    ph.textContent = "▶";
+
+    area.appendChild(ph);
+  }
+
+  addVideoTags($("detailTags"), v.tags, "tag-chip");
+  addVideoTags($("detailActresses"), v.actresses, "actress-chip");
+
+  $("detailOpenButton").onclick = () => {
+    if (isSafeHttpUrl(v.url)) {
+      window.location.assign(v.url);
+    } else {
+      notify("登録された動画URLを確認してください");
+    }
+  };
+
+  $("detailPageButton").onclick = () => {
+    hideModal("detailModal");
+    showVideoPage(v, true, true);
+  };
+
+  $("detailBackButton").onclick = () => {
+    hideModal("detailModal");
+  };
+
+  showModal("detailModal");
+}
+
+function showModal(id) {
+  $(id).classList.remove("hidden");
+}
+
+function hideModal(id) {
+  $(id).classList.add("hidden");
+}
+
+$("videoPageBack").addEventListener("click", e => {
+  e.preventDefault();
+  showListingPage(true);
+});
+
+$("searchInput").addEventListener("input", render);
+$("tagSearchInput").addEventListener("input", renderTags);
+$("actressSearchInput").addEventListener("input", renderActresses);
+$("sortSelect").addEventListener("change", render);
+
+$("clearFiltersButton").onclick = () => {
+  activeTag = "";
+  activeActress = "";
+
+  $("searchInput").value = "";
+  $("tagSearchInput").value = "";
+  $("actressSearchInput").value = "";
+  $("sortSelect").value = "newest";
+
+  render();
+};
+
+$("homeLogo").onclick = () => {
+  activeTag = "";
+  activeActress = "";
+
+  $("searchInput").value = "";
+  $("tagSearchInput").value = "";
+  $("actressSearchInput").value = "";
+  $("sortSelect").value = "newest";
+
+  render();
+  showListingPage(true);
+};
+
+document.querySelectorAll("[data-close]").forEach(b => {
+  b.onclick = () => hideModal(b.dataset.close);
+});
+
+document.querySelectorAll(".modal").forEach(m => {
+  m.addEventListener("click", e => {
+    if (e.target === m) {
+      hideModal(m.id);
+    }
+  });
+});
+
+document.addEventListener("keydown", e => {
+  if (e.key === "Escape") {
+    document.querySelectorAll(".modal").forEach(m => {
+      if (!m.classList.contains("hidden")) {
+        hideModal(m.id);
+      }
+    });
+  }
+});
+
+window.addEventListener("popstate", () => {
+  const params = new URLSearchParams(window.location.search);
+  const requestedId = params.get("video");
+
+  if (requestedId) {
+    const video = videos.find(v => String(v.id) === requestedId);
+
+    if (video) {
+      showVideoPage(video, false, false);
+    } else {
+      showListingPage(false);
+    }
+  } else {
+    showListingPage(false);
+  }
+});
+
+(async () => {
+  await loadVideos();
+})();
+
+})();
+</script>
+
+<!-- ClickAdilla共通スクリプト：1回だけ読み込む -->
+<script async src="https://js.wpadmngr.com/static/adManager.js" data-admpid="470506"></script>
+
+</body>
+</html>
