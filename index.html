@@ -1,3 +1,4 @@
+
 <!DOCTYPE html>
 <html lang="ja">
 <head>
@@ -7,26 +8,29 @@
 
 <title>素人ちゃんねる</title>
 <meta name="description" content="素人ちゃんねる。動画を検索し、タグや出演者から動画を探せる動画まとめサイト。">
-<meta name="robots" content="index,follow,max-image-preview:large">
+<meta name="robots" content="index,follow,max-image-preview:large,max-video-preview:-1">
 <link id="canonicalUrl" rel="canonical" href="https://shirochan-nel.netlify.app/">
 
 <meta property="og:site_name" content="素人ちゃんねる">
 <meta property="og:title" content="素人ちゃんねる">
-<meta property="og:description" content="素人ちゃんねる">
+<meta property="og:description" content="素人ちゃんねる。動画を検索し、タグや出演者から動画を探せる動画まとめサイト。">
 <meta property="og:type" content="website">
 <meta property="og:url" content="https://shirochan-nel.netlify.app/">
 <meta property="og:image" content="">
+<meta property="og:locale" content="ja_JP">
 
 <meta name="twitter:card" content="summary_large_image">
 <meta name="twitter:title" content="素人ちゃんねる">
-<meta name="twitter:description" content="素人ちゃんねる">
+<meta name="twitter:description" content="素人ちゃんねる。動画を検索し、タグや出演者から動画を探せる動画まとめサイト。">
+<meta name="twitter:image" content="">
 
 <script id="videoStructuredData" type="application/ld+json">
 {
   "@context":"https://schema.org",
   "@type":"WebSite",
   "name":"素人ちゃんねる",
-  "url":"https://shirochan-nel.netlify.app/"
+  "url":"https://shirochan-nel.netlify.app/",
+  "inLanguage":"ja"
 }
 </script>
 
@@ -501,9 +505,7 @@ footer{
   font-weight:800
 }
 
-.video-page-content .detail-open-button:hover{
-  opacity:.9
-}
+.video-page-content .detail-open-button:hover{opacity:.9}
 
 /* ClickAdilla 広告枠 */
 .ad-slot{
@@ -538,9 +540,7 @@ footer{
   max-width:100%
 }
 
-.ad-slot-top{
-  margin:8px auto 24px
-}
+.ad-slot-top{margin:8px auto 24px}
 
 .ad-slot-middle{
   width:100%;
@@ -829,6 +829,9 @@ const SUPABASE_URL = "https://wbcjcpnwgthsnwmwimcq.supabase.co";
 const SUPABASE_PUBLISHABLE_KEY = "sb_publishable_wI35EBfLjmNSWSfoSdOTOg_yakM_OdI";
 const STORAGE_BUCKET = "thumbnails";
 const SITE_URL = "https://shirochan-nel.netlify.app/";
+const SITE_NAME = "素人ちゃんねる";
+const HOME_DESCRIPTION =
+  "素人ちゃんねる。動画を検索し、タグや出演者から動画を探せる動画まとめサイト。";
 
 const $ = id => document.getElementById(id);
 const client = window.supabase.createClient(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY);
@@ -889,7 +892,9 @@ function normaliseVideo(v) {
     description: String(s.description || s.desc || ""),
     views: Number(s.views ?? 0),
     createdAt: toMillis(s.created_at || s.createdAt || s.created || s.timestamp),
-    updatedAt: toMillis(s.updated_at || s.updatedAt)
+    updatedAt: s.updated_at || s.updatedAt
+      ? toMillis(s.updated_at || s.updatedAt)
+      : null
   };
 }
 
@@ -942,92 +947,130 @@ function getVideoPageUrl(id) {
   return url.href;
 }
 
+function setMeta(selector, value) {
+  const element = document.querySelector(selector);
+  if (element) element.content = String(value ?? "");
+}
+
+function setRobots(indexable) {
+  setMeta(
+    'meta[name="robots"]',
+    indexable
+      ? "index,follow,max-image-preview:large,max-video-preview:-1"
+      : "noindex,follow"
+  );
+}
+
+function setStructuredData(data) {
+  $("videoStructuredData").textContent = JSON.stringify(data);
+}
+
+function getVideoDescription(video) {
+  const description = String(video.description || "").trim();
+
+  if (description) return description.slice(0, 300);
+
+  const details = [
+    video.title,
+    video.actresses.length
+      ? "出演者：" + video.actresses.join("、")
+      : "",
+    video.tags.length
+      ? "タグ：" + video.tags.join("、")
+      : ""
+  ].filter(Boolean);
+
+  return (
+    details.join("。") +
+    "。素人ちゃんねるで動画の詳細を確認できます。"
+  ).slice(0, 300);
+}
+
+function getEmbedUrl(videoUrl) {
+  if (!isSafeHttpUrl(videoUrl)) return "";
+
+  const youtubeId = getYouTubeId(videoUrl);
+
+  if (youtubeId) {
+    return "https://www.youtube.com/embed/" +
+      encodeURIComponent(youtubeId);
+  }
+
+  /*
+   * 外部サイトの通常の閲覧ページを
+   * 埋め込み動画URLとして誤登録しない。
+   * 埋め込み可能か確認できないURLは省略する。
+   */
+  return "";
+}
+
 function updateMetaForHome() {
-  document.title = "素人ちゃんねる";
+  document.title = SITE_NAME;
+  document.documentElement.lang = "ja";
 
-  const description =
-    "素人ちゃんねる。動画を検索し、タグや出演者から動画を探せる動画まとめサイト。";
+  setRobots(true);
 
-  document.querySelector('meta[name="description"]').content = description;
-
+  setMeta('meta[name="description"]', HOME_DESCRIPTION);
   $("canonicalUrl").href = SITE_URL;
 
-  document.querySelector('meta[property="og:title"]').content =
-    "素人ちゃんねる";
+  setMeta('meta[property="og:title"]', SITE_NAME);
+  setMeta('meta[property="og:description"]', HOME_DESCRIPTION);
+  setMeta('meta[property="og:type"]', "website");
+  setMeta('meta[property="og:url"]', SITE_URL);
+  setMeta('meta[property="og:image"]', "");
 
-  document.querySelector('meta[property="og:description"]').content =
-    description;
+  setMeta('meta[name="twitter:card"]', "summary_large_image");
+  setMeta('meta[name="twitter:title"]', SITE_NAME);
+  setMeta('meta[name="twitter:description"]', HOME_DESCRIPTION);
+  setMeta('meta[name="twitter:image"]', "");
 
-  document.querySelector('meta[property="og:type"]').content =
-    "website";
-
-  document.querySelector('meta[property="og:url"]').content =
-    SITE_URL;
-
-  document.querySelector('meta[property="og:image"]').content = "";
-
-  document.querySelector('meta[name="twitter:title"]').content =
-    "素人ちゃんねる";
-
-  document.querySelector('meta[name="twitter:description"]').content =
-    description;
-
-  $("videoStructuredData").textContent = JSON.stringify({
+  setStructuredData({
     "@context":"https://schema.org",
     "@type":"WebSite",
-    "name":"素人ちゃんねる",
-    "url":SITE_URL
+    "name":SITE_NAME,
+    "url":SITE_URL,
+    "inLanguage":"ja"
   });
 }
 
 function updateMetaForVideo(video) {
-  const title = video.title + " | 素人ちゃんねる";
-
-  const description = (
-    video.description ||
-    video.title + "。素人ちゃんねるで動画の詳細を確認できます。"
-  ).slice(0, 300);
-
+  const title = video.title + " | " + SITE_NAME;
+  const description = getVideoDescription(video);
   const pageUrl = getVideoPageUrl(video.id);
   const thumbnail = getThumbnail(video);
+  const embedUrl = getEmbedUrl(video.url);
 
   document.title = title;
+  document.documentElement.lang = "ja";
 
-  document.querySelector('meta[name="description"]').content =
-    description;
+  setRobots(true);
 
+  setMeta('meta[name="description"]', description);
   $("canonicalUrl").href = pageUrl;
 
-  document.querySelector('meta[property="og:title"]').content =
-    title;
+  setMeta('meta[property="og:title"]', title);
+  setMeta('meta[property="og:description"]', description);
+  setMeta('meta[property="og:type"]', "article");
+  setMeta('meta[property="og:url"]', pageUrl);
+  setMeta('meta[property="og:image"]', thumbnail);
 
-  document.querySelector('meta[property="og:description"]').content =
-    description;
+  setMeta(
+    'meta[name="twitter:card"]',
+    thumbnail ? "summary_large_image" : "summary"
+  );
+  setMeta('meta[name="twitter:title"]', title);
+  setMeta('meta[name="twitter:description"]', description);
+  setMeta('meta[name="twitter:image"]', thumbnail);
 
-  document.querySelector('meta[property="og:type"]').content =
-    "article";
-
-  document.querySelector('meta[property="og:url"]').content =
-    pageUrl;
-
-  document.querySelector('meta[property="og:image"]').content =
-    thumbnail;
-
-  document.querySelector('meta[name="twitter:title"]').content =
-    title;
-
-  document.querySelector('meta[name="twitter:description"]').content =
-    description;
-
-  $("videoStructuredData").textContent = JSON.stringify({
+  const videoSchema = {
     "@context":"https://schema.org",
     "@type":"VideoObject",
     "name":video.title,
     "description":description,
-    "thumbnailUrl":thumbnail ? [thumbnail] : undefined,
     "uploadDate":new Date(video.createdAt).toISOString(),
     "url":pageUrl,
-    "embedUrl":isSafeHttpUrl(video.url) ? video.url : undefined,
+    "inLanguage":"ja",
+    "isFamilyFriendly":false,
     "interactionStatistic":{
       "@type":"InteractionCounter",
       "interactionType":{"@type":"WatchAction"},
@@ -1035,9 +1078,87 @@ function updateMetaForVideo(video) {
     },
     "publisher":{
       "@type":"Organization",
-      "name":"素人ちゃんねる",
+      "name":SITE_NAME,
       "url":SITE_URL
+    },
+    "mainEntityOfPage":{
+      "@type":"WebPage",
+      "@id":pageUrl
     }
+  };
+
+  if (thumbnail && isSafeHttpUrl(thumbnail)) {
+    videoSchema.thumbnailUrl = [thumbnail];
+    videoSchema.image = thumbnail;
+  }
+
+  if (embedUrl) {
+    videoSchema.embedUrl = embedUrl;
+  }
+
+  if (video.tags.length) {
+    videoSchema.keywords = video.tags.join(", ");
+  }
+
+  if (video.actresses.length) {
+    videoSchema.actor = video.actresses.map(name => ({
+      "@type":"Person",
+      "name":name
+    }));
+  }
+
+  if (video.updatedAt) {
+    videoSchema.dateModified =
+      new Date(video.updatedAt).toISOString();
+  }
+
+  setStructuredData(videoSchema);
+}
+
+function updateMetaForMissingVideo() {
+  document.title = "動画が見つかりません | " + SITE_NAME;
+
+  setRobots(false);
+
+  setMeta(
+    'meta[name="description"]',
+    "指定された動画が見つかりませんでした。"
+  );
+
+  $("canonicalUrl").href = SITE_URL;
+
+  setMeta(
+    'meta[property="og:title"]',
+    "動画が見つかりません | " + SITE_NAME
+  );
+
+  setMeta(
+    'meta[property="og:description"]',
+    "指定された動画が見つかりませんでした。"
+  );
+
+  setMeta('meta[property="og:type"]', "website");
+  setMeta('meta[property="og:url"]', SITE_URL);
+  setMeta('meta[property="og:image"]', "");
+
+  setMeta(
+    'meta[name="twitter:title"]',
+    "動画が見つかりません | " + SITE_NAME
+  );
+
+  setMeta(
+    'meta[name="twitter:description"]',
+    "指定された動画が見つかりませんでした。"
+  );
+
+  setMeta('meta[name="twitter:image"]', "");
+
+  setStructuredData({
+    "@context":"https://schema.org",
+    "@type":"WebPage",
+    "name":"動画が見つかりません",
+    "url":window.location.href,
+    "inLanguage":"ja"
   });
 }
 
@@ -1076,6 +1197,7 @@ async function loadVideos() {
       showVideoPage(video, false, true);
     } else {
       showListingPage(false);
+      updateMetaForMissingVideo();
       notify("指定された動画が見つかりませんでした");
     }
   } else {
@@ -1092,7 +1214,9 @@ function getAllTags() {
     });
   });
 
-  return [...m.entries()].sort((a,b) => a[0].localeCompare(b[0], "ja"));
+  return [...m.entries()].sort((a,b) =>
+    a[0].localeCompare(b[0], "ja")
+  );
 }
 
 function getAllActresses() {
@@ -1104,7 +1228,9 @@ function getAllActresses() {
     });
   });
 
-  return [...m.entries()].sort((a,b) => a[0].localeCompare(b[0], "ja"));
+  return [...m.entries()].sort((a,b) =>
+    a[0].localeCompare(b[0], "ja")
+  );
 }
 
 function renderTags() {
@@ -1133,7 +1259,8 @@ function renderTags() {
     const b = document.createElement("button");
 
     b.className = "tag-chip" + (activeTag === tag ? " active" : "");
-    b.innerHTML = `${escapeHTML(tag)} <span class="count">${count}</span>`;
+    b.innerHTML =
+      `${escapeHTML(tag)} <span class="count">${count}</span>`;
 
     b.onclick = () => {
       activeTag = activeTag === tag ? "" : tag;
@@ -1161,7 +1288,8 @@ function renderActresses() {
   list.innerHTML = "";
 
   const all = document.createElement("button");
-  all.className = "actress-chip" + (!activeActress ? " active" : "");
+  all.className =
+    "actress-chip" + (!activeActress ? " active" : "");
   all.textContent = "すべて";
 
   all.onclick = () => {
@@ -1178,8 +1306,10 @@ function renderActresses() {
   visible.forEach(([name,count]) => {
     const b = document.createElement("button");
 
-    b.className = "actress-chip" + (activeActress === name ? " active" : "");
-    b.innerHTML = `${escapeHTML(name)} <span class="count">${count}</span>`;
+    b.className =
+      "actress-chip" + (activeActress === name ? " active" : "");
+    b.innerHTML =
+      `${escapeHTML(name)} <span class="count">${count}</span>`;
 
     b.onclick = () => {
       activeActress = activeActress === name ? "" : name;
@@ -1257,8 +1387,10 @@ function getYouTubeId(url) {
     }
 
     if (
-      h.endsWith("youtube.com") ||
-      h.endsWith("youtube-nocookie.com")
+      h === "youtube.com" ||
+      h.endsWith(".youtube.com") ||
+      h === "youtube-nocookie.com" ||
+      h.endsWith(".youtube-nocookie.com")
     ) {
       if (p.searchParams.get("v")) {
         return p.searchParams.get("v");
@@ -1324,7 +1456,6 @@ function createVideoCard(v) {
     };
 
     link.appendChild(img);
-
   } else {
     const ph = document.createElement("div");
 
@@ -1380,7 +1511,8 @@ function createVideoCard(v) {
   meta.className = "video-meta";
 
   const date = document.createElement("span");
-  date.textContent = new Date(v.createdAt).toLocaleDateString("ja-JP");
+  date.textContent =
+    new Date(v.createdAt).toLocaleDateString("ja-JP");
 
   const views = document.createElement("span");
   views.textContent = `閲覧 ${v.views || 0}回`;
@@ -1411,7 +1543,10 @@ function render() {
     `${activeTag ? " ・タグ：" + activeTag : ""}` +
     `${activeActress ? " ・出演女優：" + activeActress : ""}`;
 
-  $("emptyState").classList.toggle("hidden", list.length !== 0);
+  $("emptyState").classList.toggle(
+    "hidden",
+    list.length !== 0
+  );
 
   list.slice(0,4).forEach(v => {
     gridTop.appendChild(createVideoCard(v));
@@ -1461,9 +1596,12 @@ async function incrementVideoViews(video) {
   }
 
   const request = (async () => {
-    const { data, error } = await client.rpc("increment_video_views", {
-      video_id: Number(id)
-    });
+    const { data, error } = await client.rpc(
+      "increment_video_views",
+      {
+        video_id: Number(id)
+      }
+    );
 
     if (error) {
       console.error("閲覧数の加算に失敗しました:", error);
@@ -1472,18 +1610,26 @@ async function incrementVideoViews(video) {
 
     let updatedViews;
 
-    if (typeof data === "number" || typeof data === "string") {
+    if (
+      typeof data === "number" ||
+      typeof data === "string"
+    ) {
       updatedViews = Number(data);
 
     } else if (Array.isArray(data) && data.length) {
-      updatedViews = Number(data[0]?.views ?? data[0]);
+      updatedViews =
+        Number(data[0]?.views ?? data[0]);
 
     } else if (data && typeof data === "object") {
-      updatedViews = Number(data.views ?? data.increment_video_views);
+      updatedViews =
+        Number(data.views ?? data.increment_video_views);
     }
 
     if (!Number.isFinite(updatedViews)) {
-      console.error("RPCの戻り値から閲覧数を取得できません:", data);
+      console.error(
+        "RPCの戻り値から閲覧数を取得できません:",
+        data
+      );
       return;
     }
 
@@ -1515,18 +1661,25 @@ function addVideoTags(container, items, className) {
   }
 
   items.forEach(item => {
-    const button = createFilterButton(item, className, () => {
-      if (className === "tag-chip") {
-        activeTag = item;
-      } else {
-        activeActress = item;
+    const button = createFilterButton(
+      item,
+      className,
+      () => {
+        if (className === "tag-chip") {
+          activeTag = item;
+        } else {
+          activeActress = item;
+        }
+
+        showListingPage(true);
+        render();
+
+        window.scrollTo({
+          top:0,
+          behavior:"smooth"
+        });
       }
-
-      showListingPage(true);
-      render();
-
-      window.scrollTo({top:0,behavior:"smooth"});
-    });
+    );
 
     container.appendChild(button);
   });
@@ -1585,7 +1738,6 @@ function showVideoPage(video, pushHistory, countView) {
     };
 
     thumbnailArea.appendChild(img);
-
   } else {
     const placeholder = document.createElement("div");
     placeholder.className = "detail-no-thumbnail";
@@ -1594,8 +1746,17 @@ function showVideoPage(video, pushHistory, countView) {
     thumbnailArea.appendChild(placeholder);
   }
 
-  addVideoTags($("videoPageTags"), video.tags, "tag-chip");
-  addVideoTags($("videoPageActresses"), video.actresses, "actress-chip");
+  addVideoTags(
+    $("videoPageTags"),
+    video.tags,
+    "tag-chip"
+  );
+
+  addVideoTags(
+    $("videoPageActresses"),
+    video.actresses,
+    "actress-chip"
+  );
 
   const openButton = $("videoPageOpenButton");
 
@@ -1609,12 +1770,18 @@ function showVideoPage(video, pushHistory, countView) {
 
   updateMetaForVideo(video);
 
-  if (countView && !countedVideoIds.has(String(video.id))) {
+  if (
+    countView &&
+    !countedVideoIds.has(String(video.id))
+  ) {
     countedVideoIds.add(String(video.id));
     incrementVideoViews(video);
   }
 
-  window.scrollTo({top:0,behavior:"instant"});
+  window.scrollTo({
+    top:0,
+    behavior:"instant"
+  });
 }
 
 function showListingPage(pushHistory) {
@@ -1637,11 +1804,16 @@ function showListingPage(pushHistory) {
 
   updateMetaForHome();
 
-  window.scrollTo({top:0,behavior:"instant"});
+  window.scrollTo({
+    top:0,
+    behavior:"instant"
+  });
 }
 
 function openDetail(id) {
-  const v = videos.find(x => String(x.id) === String(id));
+  const v = videos.find(
+    x => String(x.id) === String(id)
+  );
 
   if (!v) return;
 
@@ -1679,7 +1851,6 @@ function openDetail(id) {
     };
 
     area.appendChild(img);
-
   } else {
     const ph = document.createElement("div");
 
@@ -1689,8 +1860,17 @@ function openDetail(id) {
     area.appendChild(ph);
   }
 
-  addVideoTags($("detailTags"), v.tags, "tag-chip");
-  addVideoTags($("detailActresses"), v.actresses, "actress-chip");
+  addVideoTags(
+    $("detailTags"),
+    v.tags,
+    "tag-chip"
+  );
+
+  addVideoTags(
+    $("detailActresses"),
+    v.actresses,
+    "actress-chip"
+  );
 
   $("detailOpenButton").onclick = () => {
     if (isSafeHttpUrl(v.url)) {
@@ -1782,12 +1962,15 @@ window.addEventListener("popstate", () => {
   const requestedId = params.get("video");
 
   if (requestedId) {
-    const video = videos.find(v => String(v.id) === requestedId);
+    const video = videos.find(
+      v => String(v.id) === requestedId
+    );
 
     if (video) {
       showVideoPage(video, false, false);
     } else {
       showListingPage(false);
+      updateMetaForMissingVideo();
     }
   } else {
     showListingPage(false);
