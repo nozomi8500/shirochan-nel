@@ -1,0 +1,1351 @@
+
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="robots" content="noindex,nofollow">
+<title>管理者ページ | 素人ちゃんねる</title>
+<style>
+:root{
+  --bg:#100b10;
+  --panel:#1b121b;
+  --panel2:#241724;
+  --pink:#ff4fa3;
+  --pink2:#ff85c2;
+  --text:#fff4fb;
+  --muted:#bba7b7;
+  --border:#3b2639;
+  --danger:#ff5c73;
+}
+*{box-sizing:border-box}
+body{
+  margin:0;
+  background:var(--bg);
+  color:var(--text);
+  font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",sans-serif;
+}
+button,input,textarea,select{font:inherit}
+button{
+  padding:11px 15px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:var(--panel2);
+  color:var(--text);
+  cursor:pointer;
+}
+button:disabled{opacity:.5;cursor:not-allowed}
+button.primary{
+  background:var(--pink);
+  color:#240b1a;
+  border-color:var(--pink);
+  font-weight:800;
+}
+button.danger{
+  background:#4b1727;
+  border-color:#76243c;
+  color:#fff;
+}
+button.ghost{background:transparent}
+input,textarea,select{
+  width:100%;
+  padding:12px;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:#120d13;
+  color:var(--text);
+  outline:none;
+}
+input:focus,textarea:focus,select:focus{
+  border-color:var(--pink);
+}
+textarea{min-height:110px;resize:vertical}
+label{
+  display:block;
+  margin-bottom:7px;
+  font-size:13px;
+  color:#e4cddd;
+}
+.hidden{display:none!important}
+header{
+  background:#160f16;
+  border-bottom:1px solid var(--border);
+}
+.header-inner{
+  max-width:1100px;
+  margin:auto;
+  padding:18px 16px;
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  gap:12px;
+}
+.logo{
+  font-size:22px;
+  font-weight:900;
+  color:var(--pink);
+}
+.logo span{color:white}
+main{
+  max-width:1100px;
+  margin:auto;
+  padding:24px 16px 70px;
+}
+.panel{
+  background:var(--panel);
+  border:1px solid var(--border);
+  border-radius:16px;
+  padding:20px;
+  margin-bottom:20px;
+}
+.panel h2{margin:0 0 18px;font-size:20px}
+.panel h3{margin:0 0 12px;font-size:16px}
+.auth-panel{
+  max-width:470px;
+  margin:45px auto;
+}
+.field{margin-bottom:16px;min-width:0}
+.field small,.help{
+  display:block;
+  margin-top:6px;
+  color:var(--muted);
+  font-size:12px;
+  line-height:1.6;
+}
+.form-grid{
+  display:grid;
+  grid-template-columns:1fr 1fr;
+  gap:0 16px;
+}
+.full{grid-column:1/-1}
+.actions{
+  display:flex;
+  flex-wrap:wrap;
+  gap:10px;
+  margin-top:18px;
+}
+.actions button{flex:0 0 auto}
+.status{
+  color:var(--muted);
+  font-size:13px;
+  margin:10px 0;
+}
+.message{
+  padding:12px;
+  border-radius:10px;
+  background:#281b28;
+  color:#f7d5e9;
+  margin:12px 0;
+  line-height:1.6;
+  overflow-wrap:anywhere;
+}
+.message.error{
+  background:#4b1727;
+  color:#fff;
+}
+a{color:var(--pink2)}
+.list-head{
+  display:flex;
+  justify-content:space-between;
+  align-items:center;
+  flex-wrap:wrap;
+  gap:12px;
+  margin-bottom:15px;
+}
+.list-head h2{margin:0}
+.video-list{
+  display:flex;
+  flex-direction:column;
+  gap:12px;
+}
+.video-item{
+  display:flex;
+  gap:14px;
+  padding:12px;
+  background:var(--panel2);
+  border:1px solid var(--border);
+  border-radius:12px;
+}
+.video-item img,
+.video-placeholder{
+  width:150px;
+  aspect-ratio:16/9;
+  object-fit:cover;
+  border-radius:8px;
+  background:#100b10;
+  flex-shrink:0;
+}
+.video-placeholder{
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  color:var(--pink);
+  font-size:28px;
+}
+.video-item-content{
+  min-width:0;
+  flex:1;
+}
+.video-item-title{
+  font-weight:800;
+  line-height:1.5;
+  overflow-wrap:anywhere;
+}
+.video-item-meta{
+  color:var(--muted);
+  font-size:12px;
+  margin-top:6px;
+  overflow-wrap:anywhere;
+}
+.video-item-actions{
+  display:flex;
+  gap:8px;
+  flex-wrap:wrap;
+  margin-top:10px;
+}
+.video-item-actions button{
+  padding:8px 12px;
+  font-size:13px;
+}
+.preview{
+  display:block;
+  width:min(100%,480px);
+  aspect-ratio:16/9;
+  object-fit:contain;
+  background:#0c090c;
+  border:1px solid var(--border);
+  border-radius:10px;
+  margin:12px 0;
+}
+.crop-area{
+  border:1px solid var(--border);
+  border-radius:12px;
+  padding:15px;
+  background:#140e14;
+}
+.crop-frame{
+  width:100%;
+  max-width:600px;
+  margin:12px auto;
+  overflow:hidden;
+  border:1px solid var(--border);
+  border-radius:10px;
+  background:#000;
+}
+.crop-frame canvas{
+  display:block;
+  width:100%;
+  height:auto;
+  touch-action:none;
+  cursor:grab;
+}
+.crop-frame canvas:active{cursor:grabbing}
+.range-row{
+  display:flex;
+  align-items:center;
+  gap:12px;
+  margin:12px 0;
+}
+.range-row input{flex:1}
+.range-row span{
+  min-width:45px;
+  text-align:right;
+  color:var(--muted);
+  font-size:12px;
+}
+.toast{
+  position:fixed;
+  z-index:1000;
+  bottom:20px;
+  left:50%;
+  transform:translateX(-50%);
+  max-width:90vw;
+  padding:12px 20px;
+  border-radius:999px;
+  background:#f8d9eb;
+  color:#260b1b;
+  font-weight:800;
+  text-align:center;
+  box-shadow:0 5px 25px #0008;
+}
+footer{
+  text-align:center;
+  color:var(--muted);
+  font-size:12px;
+  padding:25px;
+}
+@media(max-width:650px){
+  main{padding:16px 12px 50px}
+  .panel{padding:15px}
+  .form-grid{grid-template-columns:1fr}
+  .full{grid-column:auto}
+  .video-item img,.video-placeholder{width:110px}
+  .video-item{gap:10px}
+  .logo{font-size:19px}
+}
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-inner">
+    <div class="logo">素人<span>ちゃんねる</span> 管理画面</div>
+    <a href="./index.html">公開サイトへ</a>
+  </div>
+</header>
+
+<main>
+
+<section id="loginScreen" class="panel auth-panel">
+  <h2>管理者ログイン</h2>
+  <form id="loginForm">
+    <div class="field">
+      <label for="loginEmail">メールアドレス</label>
+      <input id="loginEmail" type="email" autocomplete="username" required>
+    </div>
+    <div class="field">
+      <label for="loginPassword">パスワード</label>
+      <input id="loginPassword" type="password" autocomplete="current-password" required>
+    </div>
+    <button type="submit" class="primary" id="loginButton">ログイン</button>
+  </form>
+  <div class="actions">
+    <button id="showResetButton" class="ghost" type="button">
+      パスワードを忘れた場合
+    </button>
+  </div>
+  <div id="loginMessage" class="message hidden"></div>
+</section>
+
+<section id="resetScreen" class="panel auth-panel hidden">
+  <h2>パスワード再設定</h2>
+  <div id="resetRequestArea">
+    <p class="help">
+      登録メールアドレスにパスワード再設定用のリンクを送信します。
+    </p>
+    <form id="resetRequestForm">
+      <div class="field">
+        <label for="resetEmail">メールアドレス</label>
+        <input id="resetEmail" type="email" required>
+      </div>
+      <button type="submit" class="primary">再設定メールを送信</button>
+    </form>
+  </div>
+  <div id="resetPasswordArea" class="hidden">
+    <form id="resetPasswordForm">
+      <div class="field">
+        <label for="newPassword">新しいパスワード</label>
+        <input id="newPassword" type="password" minlength="6" autocomplete="new-password" required>
+      </div>
+      <div class="field">
+        <label for="confirmPassword">新しいパスワード（確認）</label>
+        <input id="confirmPassword" type="password" minlength="6" autocomplete="new-password" required>
+      </div>
+      <button type="submit" class="primary">パスワードを変更</button>
+    </form>
+  </div>
+  <div id="resetMessage" class="message hidden"></div>
+  <div class="actions">
+    <button id="backLoginButton" type="button">ログイン画面へ戻る</button>
+  </div>
+</section>
+
+<div id="adminScreen" class="hidden">
+
+  <section class="panel">
+    <div class="list-head">
+      <h2>動画管理</h2>
+      <button id="logoutButton" type="button">ログアウト</button>
+    </div>
+    <p class="status" id="adminStatus">管理画面を読み込み中...</p>
+  </section>
+
+  <section class="panel" id="editorSection">
+    <h2 id="formHeading">動画を新規登録</h2>
+    <form id="videoForm">
+
+      <div class="form-grid">
+
+        <div class="field full">
+          <label for="videoTitle">動画タイトル *</label>
+          <input id="videoTitle" maxlength="500" required>
+          <small>このタイトルが公開サイトとSEOタイトルに自動反映されます。</small>
+        </div>
+
+        <div class="field full">
+          <label for="videoUrl">動画URL *</label>
+          <input id="videoUrl" type="url" placeholder="https://..." required>
+        </div>
+
+        <div class="field full">
+          <label for="thumbnailUrl">サムネイルURL</label>
+          <input id="thumbnailUrl" placeholder="https://... または保存済み画像のパス">
+        </div>
+
+        <div class="field full">
+          <label for="thumbnailFile">サムネイル画像をアップロード</label>
+          <input id="thumbnailFile" type="file" accept="image/*">
+          <small>画像を選択すると16:9で切り抜いてアップロードできます。</small>
+        </div>
+
+        <div class="field full">
+          <img id="thumbnailPreview" class="preview hidden" alt="サムネイルプレビュー">
+        </div>
+
+        <div class="field full">
+          <div id="cropArea" class="crop-area hidden">
+            <h3>サムネイル切り抜き（16:9）</h3>
+            <p class="help">
+              画像を指で動かして位置を調整できます。
+              スライダーで拡大・縮小できます。
+            </p>
+            <div class="crop-frame">
+              <canvas id="cropCanvas" width="960" height="540"></canvas>
+            </div>
+            <div class="range-row">
+              <span>拡大</span>
+              <input id="cropZoom" type="range" min="100" max="400" value="100">
+              <span id="zoomValue">100%</span>
+            </div>
+            <div class="actions">
+              <button id="resetCropButton" type="button">位置をリセット</button>
+              <button id="applyCropButton" type="button" class="primary">
+                切り抜きを確定
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <div class="field full">
+          <label for="videoTags">タグ</label>
+          <input id="videoTags" placeholder="タグ1、タグ2、タグ3">
+          <small>カンマ・読点・改行で区切って入力できます。</small>
+        </div>
+
+        <div class="field full">
+          <label for="videoActress">出演女優</label>
+          <input id="videoActress" placeholder="出演者名1、出演者名2">
+        </div>
+
+        <div class="field full">
+          <label for="videoDescription">動画説明文</label>
+          <textarea id="videoDescription" placeholder="動画の説明を入力"></textarea>
+          <small>この説明文が公開サイトとSEO説明文に自動反映されます。</small>
+        </div>
+
+        <div class="field">
+          <label for="videoSortOrder">表示順</label>
+          <input id="videoSortOrder" type="number" step="1" value="0">
+        </div>
+
+      </div>
+
+      <div class="actions">
+        <button id="saveVideoButton" type="submit" class="primary">
+          動画を登録
+        </button>
+        <button id="cancelEditButton" type="button" class="hidden">
+          編集をキャンセル
+        </button>
+        <button id="clearFormButton" type="button">
+          入力内容をクリア
+        </button>
+      </div>
+
+    </form>
+  </section>
+
+  <section class="panel">
+    <div class="list-head">
+      <h2>登録済み動画</h2>
+      <button id="reloadButton" type="button">再読み込み</button>
+    </div>
+
+    <div class="field">
+      <input id="adminSearch" type="search" placeholder="タイトル・タグ・出演女優で検索">
+    </div>
+
+    <p id="videoCount" class="status"></p>
+    <div id="videoList" class="video-list"></div>
+  </section>
+
+</div>
+
+</main>
+
+<footer>素人ちゃんねる 管理画面</footer>
+<div id="toast" class="toast hidden"></div>
+
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+(function(){
+"use strict";
+
+const SUPABASE_URL =
+  "https://wbcjcpnwgthsnwmwimcq.supabase.co";
+
+const SUPABASE_KEY =
+  "sb_publishable_wI35EBfLjmNSWSfoSdOTOg_yakM_OdI";
+
+const ADMIN_UID =
+  "e015cf9d-9599-4096-918c-ec4e820d3b00";
+
+const STORAGE_BUCKET = "thumbnails";
+
+const client = window.supabase.createClient(
+  SUPABASE_URL,
+  SUPABASE_KEY
+);
+
+const $ = id => document.getElementById(id);
+
+let videos = [];
+let editingId = null;
+let saving = false;
+let uploadedBlob = null;
+let cropImage = null;
+let cropScale = 1;
+let cropX = 0;
+let cropY = 0;
+let dragging = false;
+let lastPointerX = 0;
+let lastPointerY = 0;
+let toastTimer = null;
+let recoveryMode = false;
+
+const canvas = $("cropCanvas");
+const ctx = canvas.getContext("2d");
+
+function toast(message){
+  const el = $("toast");
+  el.textContent = message;
+  el.classList.remove("hidden");
+  clearTimeout(toastTimer);
+  toastTimer = setTimeout(() => {
+    el.classList.add("hidden");
+  }, 3500);
+}
+
+function message(id, text, error=false){
+  const el = $(id);
+  el.textContent = text;
+  el.classList.toggle("error",error);
+  el.classList.remove("hidden");
+}
+
+function clearMessage(id){
+  $(id).classList.add("hidden");
+  $(id).textContent = "";
+}
+
+function parseList(value){
+  if(Array.isArray(value)){
+    return [...new Set(
+      value.map(x => String(x).trim()).filter(Boolean)
+    )];
+  }
+  return [...new Set(
+    String(value || "")
+      .split(/[,\u3001\n\r]+/)
+      .map(x => x.trim())
+      .filter(Boolean)
+  )];
+}
+
+function normalise(v){
+  return {
+    ...v,
+    id:String(v.id),
+    title:String(v.title || ""),
+    url:String(v.url || ""),
+    thumbnail:String(v.thumbnail || ""),
+    tags:parseList(v.tags),
+    actresses:parseList(v.actress),
+    description:String(v.description || ""),
+    sort_order:Number(v.sort_order || 0)
+  };
+}
+
+function isHttpUrl(value){
+  try{
+    const u = new URL(value);
+    return u.protocol === "https:" || u.protocol === "http:";
+  }catch(e){
+    return false;
+  }
+}
+
+function thumbnailUrl(value){
+  const raw = String(value || "").trim();
+  if(!raw)return "";
+
+  if(/^https?:\/\//i.test(raw))return raw;
+
+  let path = raw.replace(/^\/+/,"");
+
+  if(path.startsWith(STORAGE_BUCKET + "/")){
+    path = path.slice(STORAGE_BUCKET.length + 1);
+  }
+
+  return client.storage
+    .from(STORAGE_BUCKET)
+    .getPublicUrl(path).data.publicUrl;
+}
+
+function getYouTubeId(value){
+  try{
+    const u = new URL(value);
+    const host = u.hostname.replace(/^www\./,"");
+
+    if(host === "youtu.be"){
+      return u.pathname.split("/").filter(Boolean)[0] || "";
+    }
+
+    if(
+      host === "youtube.com" ||
+      host.endsWith(".youtube.com") ||
+      host === "youtube-nocookie.com"
+    ){
+      if(u.searchParams.get("v")){
+        return u.searchParams.get("v");
+      }
+      const p = u.pathname.split("/").filter(Boolean);
+      if(["embed","shorts","live","v"].includes(p[0])){
+        return p[1] || "";
+      }
+    }
+  }catch(e){}
+  return "";
+}
+
+function getThumbnail(v){
+  const stored = thumbnailUrl(v.thumbnail);
+  if(stored)return stored;
+
+  const id = getYouTubeId(v.url);
+  return id
+    ? "https://img.youtube.com/vi/" +
+      encodeURIComponent(id) + "/hqdefault.jpg"
+    : "";
+}
+
+function showScreen(name){
+  $("loginScreen").classList.toggle(
+    "hidden",name !== "login"
+  );
+  $("resetScreen").classList.toggle(
+    "hidden",name !== "reset"
+  );
+  $("adminScreen").classList.toggle(
+    "hidden",name !== "admin"
+  );
+}
+
+async function getAuthorizedUser(){
+  const {data,error} = await client.auth.getUser();
+  if(error || !data.user)return null;
+  return data.user.id === ADMIN_UID ? data.user : null;
+}
+
+async function initialize(){
+  const params = new URLSearchParams(location.search);
+  const hash = new URLSearchParams(
+    location.hash.replace(/^#/,"")
+  );
+
+  recoveryMode =
+    params.get("type") === "recovery" ||
+    hash.get("type") === "recovery";
+
+  if(recoveryMode){
+    showScreen("reset");
+    $("resetRequestArea").classList.add("hidden");
+    $("resetPasswordArea").classList.remove("hidden");
+    return;
+  }
+
+  const user = await getAuthorizedUser();
+
+  if(user){
+    showScreen("admin");
+    await loadVideos();
+  }else{
+    showScreen("login");
+  }
+}
+
+$("loginForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  clearMessage("loginMessage");
+
+  const button = $("loginButton");
+  button.disabled = true;
+
+  try{
+    const email = $("loginEmail").value.trim();
+    const password = $("loginPassword").value;
+
+    const {data,error} =
+      await client.auth.signInWithPassword({
+        email,
+        password
+      });
+
+    if(error)throw error;
+
+    if(!data.user || data.user.id !== ADMIN_UID){
+      await client.auth.signOut();
+      throw new Error("このアカウントには管理権限がありません。");
+    }
+
+    $("loginPassword").value = "";
+    showScreen("admin");
+    await loadVideos();
+
+  }catch(error){
+    message("loginMessage",error.message,true);
+  }finally{
+    button.disabled = false;
+  }
+});
+
+$("logoutButton").onclick = async ()=>{
+  await client.auth.signOut();
+  resetForm();
+  videos = [];
+  $("videoList").innerHTML = "";
+  showScreen("login");
+  toast("ログアウトしました");
+};
+
+$("showResetButton").onclick = ()=>{
+  $("resetRequestArea").classList.remove("hidden");
+  $("resetPasswordArea").classList.add("hidden");
+  $("resetEmail").value = $("loginEmail").value;
+  clearMessage("resetMessage");
+  showScreen("reset");
+};
+
+$("backLoginButton").onclick = ()=>{
+  recoveryMode = false;
+  history.replaceState(null,"",location.pathname);
+  clearMessage("resetMessage");
+  showScreen("login");
+};
+
+$("resetRequestForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+
+  try{
+    const redirectTo =
+      new URL("admin.html",location.href).href;
+
+    const {error} =
+      await client.auth.resetPasswordForEmail(
+        $("resetEmail").value.trim(),
+        {redirectTo}
+      );
+
+    if(error)throw error;
+
+    message(
+      "resetMessage",
+      "再設定メールを送信しました。メール内のリンクを開いてください。"
+    );
+  }catch(error){
+    message("resetMessage",error.message,true);
+  }
+});
+
+client.auth.onAuthStateChange((event,session)=>{
+  if(event === "PASSWORD_RECOVERY"){
+    recoveryMode = true;
+    showScreen("reset");
+    $("resetRequestArea").classList.add("hidden");
+    $("resetPasswordArea").classList.remove("hidden");
+  }
+});
+
+$("resetPasswordForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+
+  const password = $("newPassword").value;
+  const confirm = $("confirmPassword").value;
+
+  if(password !== confirm){
+    message(
+      "resetMessage",
+      "確認用パスワードが一致しません。",
+      true
+    );
+    return;
+  }
+
+  try{
+    const user = await getAuthorizedUser();
+
+    if(!user){
+      throw new Error(
+        "管理者アカウントで再設定リンクを開いてください。"
+      );
+    }
+
+    const {error} = await client.auth.updateUser({
+      password
+    });
+
+    if(error)throw error;
+
+    recoveryMode = false;
+    history.replaceState(null,"",location.pathname);
+
+    $("newPassword").value = "";
+    $("confirmPassword").value = "";
+
+    message(
+      "resetMessage",
+      "パスワードを変更しました。"
+    );
+
+    toast("パスワードを変更しました");
+
+    setTimeout(async()=>{
+      showScreen("admin");
+      await loadVideos();
+    },700);
+
+  }catch(error){
+    message("resetMessage",error.message,true);
+  }
+});
+
+async function loadVideos(){
+  $("adminStatus").textContent = "動画を読み込み中...";
+
+  const user = await getAuthorizedUser();
+
+  if(!user){
+    showScreen("login");
+    return;
+  }
+
+  const {data,error} = await client
+    .from("videos")
+    .select(
+      "id,created_at,title,url,thumbnail,actress,tags,description,sort_order"
+    )
+    .order("sort_order",{ascending:false});
+
+  if(error){
+    $("adminStatus").textContent =
+      "動画の読み込みに失敗しました";
+    toast(error.message);
+    return;
+  }
+
+  videos = (data || []).map(normalise);
+
+  $("adminStatus").textContent =
+    "登録済み動画：" + videos.length + "本";
+
+  renderVideos();
+}
+
+function renderVideos(){
+  const list = $("videoList");
+  list.innerHTML = "";
+
+  const query =
+    $("adminSearch").value.trim().toLocaleLowerCase();
+
+  const filtered = videos.filter(v =>
+    [
+      v.title,
+      v.description,
+      ...v.tags,
+      ...v.actresses
+    ].join(" ").toLocaleLowerCase().includes(query)
+  );
+
+  $("videoCount").textContent =
+    filtered.length + "本を表示中";
+
+  if(!filtered.length){
+    const p = document.createElement("p");
+    p.className = "status";
+    p.textContent = "該当する動画がありません。";
+    list.appendChild(p);
+    return;
+  }
+
+  filtered.forEach(v=>{
+    const item = document.createElement("article");
+    item.className = "video-item";
+
+    const src = getThumbnail(v);
+
+    if(src){
+      const img = document.createElement("img");
+      img.src = src;
+      img.alt = v.title;
+      img.loading = "lazy";
+      item.appendChild(img);
+    }else{
+      const placeholder = document.createElement("div");
+      placeholder.className = "video-placeholder";
+      placeholder.textContent = "▶";
+      item.appendChild(placeholder);
+    }
+
+    const content = document.createElement("div");
+    content.className = "video-item-content";
+
+    const title = document.createElement("div");
+    title.className = "video-item-title";
+    title.textContent = v.title;
+
+    const meta = document.createElement("div");
+    meta.className = "video-item-meta";
+    meta.textContent =
+      "ID: " + v.id +
+      " ・ 表示順: " + v.sort_order;
+
+    const tags = document.createElement("div");
+    tags.className = "video-item-meta";
+    tags.textContent = v.tags.join("、");
+
+    const actions = document.createElement("div");
+    actions.className = "video-item-actions";
+
+    const edit = document.createElement("button");
+    edit.textContent = "編集";
+    edit.onclick = ()=>editVideo(v.id);
+
+    const open = document.createElement("button");
+    open.textContent = "公開ページ";
+    open.onclick = ()=>{
+      const url = new URL("./index.html",location.href);
+      url.searchParams.set("video",v.id);
+      window.open(url.href,"_blank","noopener");
+    };
+
+    const del = document.createElement("button");
+    del.className = "danger";
+    del.textContent = "削除";
+    del.onclick = ()=>deleteVideo(v.id);
+
+    actions.append(edit,open,del);
+    content.append(title,meta,tags,actions);
+    item.appendChild(content);
+    list.appendChild(item);
+  });
+}
+
+function editVideo(id){
+  const v = videos.find(x=>x.id === String(id));
+  if(!v)return;
+
+  editingId = v.id;
+
+  $("formHeading").textContent =
+    "動画を編集（ID: " + v.id + "）";
+
+  $("videoTitle").value = v.title;
+  $("videoUrl").value = v.url;
+  $("thumbnailUrl").value = v.thumbnail;
+  $("videoTags").value = v.tags.join("、");
+  $("videoActress").value = v.actresses.join("、");
+  $("videoDescription").value = v.description;
+  $("videoSortOrder").value = v.sort_order;
+
+  $("thumbnailFile").value = "";
+  uploadedBlob = null;
+  cropImage = null;
+  $("cropArea").classList.add("hidden");
+
+  updatePreview();
+
+  $("saveVideoButton").textContent = "変更を保存";
+  $("cancelEditButton").classList.remove("hidden");
+
+  $("editorSection").scrollIntoView({
+    behavior:"smooth",
+    block:"start"
+  });
+}
+
+function resetForm(){
+  editingId = null;
+  $("videoForm").reset();
+  $("videoSortOrder").value = "0";
+
+  $("formHeading").textContent = "動画を新規登録";
+  $("saveVideoButton").textContent = "動画を登録";
+  $("cancelEditButton").classList.add("hidden");
+
+  uploadedBlob = null;
+  cropImage = null;
+  $("cropArea").classList.add("hidden");
+  $("thumbnailPreview").classList.add("hidden");
+  $("thumbnailPreview").removeAttribute("src");
+}
+
+$("cancelEditButton").onclick = resetForm;
+$("clearFormButton").onclick = resetForm;
+$("reloadButton").onclick = loadVideos;
+$("adminSearch").addEventListener("input",renderVideos);
+
+function updatePreview(){
+  const value = $("thumbnailUrl").value.trim();
+  const src = thumbnailUrl(value);
+
+  const preview = $("thumbnailPreview");
+
+  if(src){
+    preview.src = src;
+    preview.classList.remove("hidden");
+  }else{
+    preview.classList.add("hidden");
+    preview.removeAttribute("src");
+  }
+}
+
+$("thumbnailUrl").addEventListener("input",()=>{
+  if(!uploadedBlob)updatePreview();
+});
+
+function fitCrop(){
+  if(!cropImage)return;
+
+  const w = canvas.width;
+  const h = canvas.height;
+
+  cropScale = Math.max(
+    w / cropImage.width,
+    h / cropImage.height
+  );
+
+  cropX = (w - cropImage.width * cropScale) / 2;
+  cropY = (h - cropImage.height * cropScale) / 2;
+
+  $("cropZoom").value = "100";
+  $("zoomValue").textContent = "100%";
+
+  drawCrop();
+}
+
+function clampCrop(){
+  if(!cropImage)return;
+
+  const imageW = cropImage.width * cropScale;
+  const imageH = cropImage.height * cropScale;
+
+  cropX = Math.min(
+    0,
+    Math.max(canvas.width-imageW,cropX)
+  );
+
+  cropY = Math.min(
+    0,
+    Math.max(canvas.height-imageH,cropY)
+  );
+}
+
+function drawCrop(){
+  if(!cropImage)return;
+
+  clampCrop();
+  ctx.clearRect(0,0,canvas.width,canvas.height);
+  ctx.drawImage(
+    cropImage,
+    cropX,
+    cropY,
+    cropImage.width * cropScale,
+    cropImage.height * cropScale
+  );
+}
+
+$("thumbnailFile").addEventListener("change",async e=>{
+  const file = e.target.files?.[0];
+  if(!file)return;
+
+  if(!file.type.startsWith("image/")){
+    toast("画像ファイルを選択してください");
+    return;
+  }
+
+  try{
+    const image = new Image();
+    const objectUrl = URL.createObjectURL(file);
+
+    await new Promise((resolve,reject)=>{
+      image.onload = resolve;
+      image.onerror = reject;
+      image.src = objectUrl;
+    });
+
+    URL.revokeObjectURL(objectUrl);
+
+    cropImage = image;
+    uploadedBlob = null;
+
+    $("cropArea").classList.remove("hidden");
+    $("thumbnailPreview").classList.add("hidden");
+
+    fitCrop();
+  }catch(error){
+    console.error(error);
+    toast("画像を読み込めませんでした");
+  }
+});
+
+$("cropZoom").addEventListener("input",e=>{
+  if(!cropImage)return;
+
+  const zoom = Number(e.target.value) / 100;
+  const baseScale = Math.max(
+    canvas.width/cropImage.width,
+    canvas.height/cropImage.height
+  );
+
+  const oldW = cropImage.width * cropScale;
+  const oldH = cropImage.height * cropScale;
+
+  const centerX = (canvas.width/2-cropX)/oldW;
+  const centerY = (canvas.height/2-cropY)/oldH;
+
+  cropScale = baseScale * zoom;
+
+  cropX =
+    canvas.width/2 -
+    centerX * cropImage.width * cropScale;
+
+  cropY =
+    canvas.height/2 -
+    centerY * cropImage.height * cropScale;
+
+  $("zoomValue").textContent = e.target.value + "%";
+  drawCrop();
+});
+
+canvas.addEventListener("pointerdown",e=>{
+  if(!cropImage)return;
+  dragging = true;
+  lastPointerX = e.clientX;
+  lastPointerY = e.clientY;
+  canvas.setPointerCapture(e.pointerId);
+});
+
+canvas.addEventListener("pointermove",e=>{
+  if(!dragging || !cropImage)return;
+
+  const rect = canvas.getBoundingClientRect();
+  const factorX = canvas.width / rect.width;
+  const factorY = canvas.height / rect.height;
+
+  cropX += (e.clientX-lastPointerX)*factorX;
+  cropY += (e.clientY-lastPointerY)*factorY;
+
+  lastPointerX = e.clientX;
+  lastPointerY = e.clientY;
+
+  drawCrop();
+});
+
+function stopDragging(){
+  dragging = false;
+}
+
+canvas.addEventListener("pointerup",stopDragging);
+canvas.addEventListener("pointercancel",stopDragging);
+canvas.addEventListener("lostpointercapture",stopDragging);
+
+$("resetCropButton").onclick = fitCrop;
+
+$("applyCropButton").onclick = async ()=>{
+  if(!cropImage)return;
+
+  drawCrop();
+
+  try{
+    uploadedBlob = await new Promise((resolve,reject)=>{
+      canvas.toBlob(
+        blob => blob ? resolve(blob) : reject(
+          new Error("画像の変換に失敗しました")
+        ),
+        "image/jpeg",
+        0.88
+      );
+    });
+
+    const preview = $("thumbnailPreview");
+
+    if(preview.dataset.objectUrl){
+      URL.revokeObjectURL(preview.dataset.objectUrl);
+    }
+
+    const objectUrl = URL.createObjectURL(uploadedBlob);
+    preview.dataset.objectUrl = objectUrl;
+    preview.src = objectUrl;
+    preview.classList.remove("hidden");
+
+    $("cropArea").classList.add("hidden");
+
+    toast("切り抜きを確定しました。保存するとアップロードされます。");
+  }catch(error){
+    toast(error.message);
+  }
+};
+
+async function uploadThumbnail(blob){
+  const user = await getAuthorizedUser();
+
+  if(!user){
+    throw new Error("管理者としてログインしてください。");
+  }
+
+  const filename =
+    "video-" +
+    Date.now() +
+    "-" +
+    Math.random().toString(36).slice(2,10) +
+    ".jpg";
+
+  const {data,error} = await client.storage
+    .from(STORAGE_BUCKET)
+    .upload(filename,blob,{
+      contentType:"image/jpeg",
+      upsert:false
+    });
+
+  if(error)throw error;
+
+  return data.path;
+}
+
+$("videoForm").addEventListener("submit",async e=>{
+  e.preventDefault();
+  if(saving)return;
+
+  const title = $("videoTitle").value.trim();
+  const url = $("videoUrl").value.trim();
+
+  if(!title || !isHttpUrl(url)){
+    toast("動画タイトルと正しいURLを入力してください");
+    return;
+  }
+
+  if(cropImage && !uploadedBlob &&
+     !$("cropArea").classList.contains("hidden")){
+    toast("サムネイルの切り抜きを確定してください");
+    return;
+  }
+
+  const user = await getAuthorizedUser();
+
+  if(!user){
+    toast("ログインし直してください");
+    showScreen("login");
+    return;
+  }
+
+  saving = true;
+  $("saveVideoButton").disabled = true;
+  $("adminStatus").textContent = "保存中...";
+
+  try{
+    let thumbnail = $("thumbnailUrl").value.trim();
+
+    if(uploadedBlob){
+      thumbnail = await uploadThumbnail(uploadedBlob);
+    }
+
+    const payload = {
+      title,
+      url,
+      thumbnail,
+      tags:parseList($("videoTags").value),
+      actress:$("videoActress").value.trim(),
+      description:$("videoDescription").value.trim(),
+      sort_order:Number($("videoSortOrder").value) || 0
+    };
+
+    let error;
+
+    if(editingId !== null){
+      ({error} = await client
+        .from("videos")
+        .update(payload)
+        .eq("id",editingId));
+    }else{
+      ({error} = await client
+        .from("videos")
+        .insert(payload));
+    }
+
+    if(error)throw error;
+
+    toast(
+      editingId !== null
+        ? "動画を更新しました"
+        : "動画を登録しました"
+    );
+
+    resetForm();
+    await loadVideos();
+
+  }catch(error){
+    console.error(error);
+    toast("保存に失敗しました：" + error.message);
+    $("adminStatus").textContent = "保存に失敗しました";
+  }finally{
+    saving = false;
+    $("saveVideoButton").disabled = false;
+  }
+});
+
+async function deleteVideo(id){
+  const v = videos.find(x=>x.id === String(id));
+  if(!v)return;
+
+  const confirmed = confirm(
+    "「" + v.title + "」を削除しますか？\n" +
+    "この操作は取り消せません。"
+  );
+
+  if(!confirmed)return;
+
+  try{
+    const user = await getAuthorizedUser();
+
+    if(!user){
+      throw new Error("管理者としてログインしてください。");
+    }
+
+    const {error} = await client
+      .from("videos")
+      .delete()
+      .eq("id",id);
+
+    if(error)throw error;
+
+    if(editingId === String(id)){
+      resetForm();
+    }
+
+    toast("動画を削除しました");
+    await loadVideos();
+
+  }catch(error){
+    console.error(error);
+    toast("削除に失敗しました：" + error.message);
+  }
+}
+
+initialize();
+
+})();
+</script>
+</body>
+</html>
