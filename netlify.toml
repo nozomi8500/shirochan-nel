@@ -7,3 +7,7 @@
   to = "/.netlify/functions/sitemap"
   status = 200
   force = true
+
+[[edge_functions]]
+  function = "video-seo"
+  path = "/"
